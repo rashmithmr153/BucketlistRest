@@ -101,9 +101,6 @@ label {
   top: 0;
   z-index: 3;
 
-  background: rgba(246, 244, 242, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 
   /* background: #f6f4f2; */
   padding-bottom: 10px;
