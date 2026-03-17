@@ -2,22 +2,23 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "rashmith123"
-	dbname   = "testDB"
-)
+// const (
+// 	host     = "localhost"
+// 	port     = 5432
+// 	user     = "postgres"
+// 	password = "rashmith123"
+// 	dbname   = "testDB"
+// )
 
 type Place struct {
 	ID        int    `json:"id"`
@@ -27,17 +28,26 @@ type Place struct {
 }
 
 func main() {
-	r := gin.Default()
-	r.Use(cors.Default())
-	psqlcon := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
-	db, err := sql.Open("postgres", psqlcon)
+	_ = godotenv.Load()
+	req := gin.Default()
+	req.Use(cors.Default())
+	connStr := os.Getenv("DATABASE_URL")
+	log.Println("DATABASE_URL from .env:", connStr)
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal("Failed to open db:", err)
+		log.Fatal("Failed to connect DB:", err)
 	}
+	if err2 := db.Ping(); err2 != nil {
+		log.Fatalf("Database ping failed: %v", err2)
+	} else {
+		log.Println("Database connected successfully")
+	}
+	//for local
+	// psqlcon := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
 	defer db.Close()
 	// showAll := `SELECT * FROM places`
 
-	r.GET("/places", func(c *gin.Context) {
+	req.GET("/places", func(c *gin.Context) {
 		rows, err := db.Query("SELECT * FROM places")
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
@@ -48,13 +58,17 @@ func main() {
 		var places []Place
 		for rows.Next() {
 			var place Place
-			rows.Scan(&place.ID, &place.Name, &place.Category, &place.Isvisited)
+			err := rows.Scan(&place.ID, &place.Name, &place.Category, &place.Isvisited)
+			if err != nil {
+				c.JSON(500, gin.H{"error": err.Error()})
+				return
+			}
 			places = append(places, place)
 		}
 
 		c.JSON(200, places)
 	})
-	r.PATCH("/places/:id", func(c *gin.Context) {
+	req.PATCH("/places/:id", func(c *gin.Context) {
 		idStr := c.Param("id")
 
 		id, err1 := strconv.Atoi(idStr)
@@ -64,7 +78,7 @@ func main() {
 		}
 		query := `
 		UPDATE places
-		SET isvisited = NOT isvisited
+		SET is_visited = NOT is_visited
 		WHERE id = $1
 	`
 
@@ -77,7 +91,7 @@ func main() {
 		c.JSON(200, gin.H{"message": "updated"})
 	})
 
-	if err := r.Run(); err != nil {
+	if err := req.Run(); err != nil {
 		log.Fatalf("Failed to run server : %v", err)
 	}
 
