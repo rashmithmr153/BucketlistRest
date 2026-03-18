@@ -69,7 +69,6 @@ function Components() {
   const [places, setPlaces] = useState([]);
   useEffect(() => {
     getPlaces().then((data) => {
-      console.log("API DATA:", data);
       setPlaces(data);
     });
   }, []);
@@ -98,7 +97,7 @@ function Components() {
 
         <div className="progressHeader">
           <h2>
-            Visited {visitedCount} / {total}
+            Visited {visitedCount}/{total}
           </h2>
           <span>{Math.round(progressPercent)}%</span>
         </div>
