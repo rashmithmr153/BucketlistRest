@@ -38,16 +38,8 @@ func main() {
 		log.Fatal("Failed to open DB connection:", err)
 	}
 	defer db.Close()
-	_, err = db.Exec(`
-CREATE TABLE IF NOT EXISTS places (
-	id SERIAL PRIMARY KEY,
-	place_name TEXT,
-	category TEXT,
-	is_visited BOOLEAN DEFAULT FALSE
-)
-`)
-	if err != nil {
-		log.Fatal("Failed to create table:", err)
+	if os.Getenv("SEED_DB") == "true" {
+		SeedPlaces(db)
 	}
 	// Test database connection
 	if err := db.Ping(); err != nil {
