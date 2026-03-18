@@ -12,14 +12,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// const (
-// 	host     = "localhost"
-// 	port     = 5432
-// 	user     = "postgres"
-// 	password = "rashmith123"
-// 	dbname   = "testDB"
-// )
-
 type Place struct {
 	ID        int    `json:"id"`
 	Name      string `json:"place_name,omitempty"`
@@ -28,28 +20,55 @@ type Place struct {
 }
 
 func main() {
-	_ = godotenv.Load()
-	req := gin.Default()
-	req.Use(cors.Default())
+	// Load .env with error checking
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, using environment variables")
+	}
+
+	// Get database URL
 	connStr := os.Getenv("DATABASE_URL")
-	log.Println("DATABASE_URL from .env:", connStr)
+	if connStr == "" {
+		log.Fatal("DATABASE_URL environment variable not set")
+	}
+	log.Println("DATABASE_URL loaded successfully")
+
+	// Connect to database
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal("Failed to connect DB:", err)
+		log.Fatal("Failed to open DB connection:", err)
 	}
-	if err2 := db.Ping(); err2 != nil {
-		log.Fatalf("Database ping failed: %v", err2)
-	} else {
-		log.Println("Database connected successfully")
-	}
-	//for local
-	// psqlcon := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
 	defer db.Close()
-	// showAll := `SELECT * FROM places`
+	_, err = db.Exec(`
+CREATE TABLE IF NOT EXISTS places (
+	id SERIAL PRIMARY KEY,
+	place_name TEXT,
+	category TEXT,
+	is_visited BOOLEAN DEFAULT FALSE
+)
+`)
+	if err != nil {
+		log.Fatal("Failed to create table:", err)
+	}
+	// Test database connection
+	if err := db.Ping(); err != nil {
+		log.Fatal("Database ping failed:", err)
+	}
+	log.Println("✅ Database connected successfully")
 
+	// Initialize Gin
+	req := gin.Default()
+	req.Use(cors.Default())
+
+	// Health check endpoint (no database required)
+	req.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok", "message": "Server is running"})
+	})
+
+	// Get all places
 	req.GET("/places", func(c *gin.Context) {
-		rows, err := db.Query("SELECT * FROM places")
+		rows, err := db.Query("SELECT id, place_name, category, is_visited FROM places")
 		if err != nil {
+			log.Println("Query error:", err)
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
@@ -60,39 +79,62 @@ func main() {
 			var place Place
 			err := rows.Scan(&place.ID, &place.Name, &place.Category, &place.Isvisited)
 			if err != nil {
+				log.Println("Scan error:", err)
 				c.JSON(500, gin.H{"error": err.Error()})
 				return
 			}
 			places = append(places, place)
 		}
 
-		c.JSON(200, places)
-	})
-	req.PATCH("/places/:id", func(c *gin.Context) {
-		idStr := c.Param("id")
-
-		id, err1 := strconv.Atoi(idStr)
-		if err1 != nil {
-			c.JSON(400, gin.H{"error": "Invalid ID"})
-			return
-		}
-		query := `
-		UPDATE places
-		SET is_visited = NOT is_visited
-		WHERE id = $1
-	`
-
-		_, err := db.Exec(query, id)
-		if err != nil {
+		// Check for errors during iteration
+		if err := rows.Err(); err != nil {
+			log.Println("Rows error:", err)
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(200, gin.H{"message": "updated"})
+		c.JSON(200, places)
 	})
 
-	if err := req.Run(); err != nil {
-		log.Fatalf("Failed to run server : %v", err)
+	// Update place visited status
+	req.PATCH("/places/:id", func(c *gin.Context) {
+		idStr := c.Param("id")
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.JSON(400, gin.H{"error": "Invalid ID"})
+			return
+		}
+
+		query := `UPDATE places SET is_visited = NOT is_visited WHERE id = $1`
+
+		result, err := db.Exec(query, id)
+		if err != nil {
+			log.Println("Update error:", err)
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		rowsAffected, _ := result.RowsAffected()
+		if rowsAffected == 0 {
+			c.JSON(404, gin.H{"error": "Place not found"})
+			return
+		}
+
+		c.JSON(200, gin.H{"message": "Place updated successfully"})
+	})
+
+	// Start server
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
 
+	log.Printf("🚀 Starting server on port %s", port)
+	log.Printf("📍 Health check: http://localhost:%s/health", port)
+	log.Printf("📍 Get places: http://localhost:%s/places", port)
+
+	if err := req.Run(":" + port); err != nil {
+		log.Fatalf("Failed to run server: %v", err)
+	}
 }
