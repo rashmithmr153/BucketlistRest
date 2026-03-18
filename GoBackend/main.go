@@ -38,9 +38,8 @@ func main() {
 		log.Fatal("Failed to open DB connection:", err)
 	}
 	defer db.Close()
-	if os.Getenv("SEED_DB") == "true" {
-		SeedPlaces(db)
-	}
+
+	
 	// Test database connection
 	if err := db.Ping(); err != nil {
 		log.Fatal("Database ping failed:", err)
