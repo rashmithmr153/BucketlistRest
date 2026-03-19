@@ -1,4 +1,4 @@
-function ProgressBar({ progressPercent }) {
+export function ProgressBar({ progressPercent }) {
   return (
     <div className="progressContainer">
       <div
@@ -8,5 +8,21 @@ function ProgressBar({ progressPercent }) {
     </div>
   );
 }
-
-export default ProgressBar;
+export function Addform(){
+    return(
+        <div className="addForm">
+    <form>
+      <input type="text" placeholder="Name" />
+      <select>
+        <option value="cafe">Cafe</option>
+        <option value="breakfast">Breakfast</option>
+        <option value="finedine">FineDine</option>
+        <option value="seafood">Seafood</option>
+        <option value="icecream">Ice Cream</option>
+        <option value="other">Other</option>
+      </select>
+      <button type="submit">Add</button>
+    </form>
+  </div>
+    )
+}

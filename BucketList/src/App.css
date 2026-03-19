@@ -13,7 +13,6 @@ body {
 }
 .progressHeader {
   display: flex;
-  /* flex-wrap: wrap; */
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
@@ -67,9 +66,39 @@ body {
   gap: 10px;
   max-width: 900px;
   margin: auto;
+}
+.card.progressCard {
+  max-height: 143px; /* collapsed height */
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
 
-  max-height: none !important;
-  overflow: visible !important;
+.card.progressCard.activeCard {
+  max-height: 500px; /* expanded height */
+}
+.addForm {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.addForm input,
+.addForm select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  width: 100%;
+}
+
+.addForm button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: #f97316;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 .components {
   display: grid;

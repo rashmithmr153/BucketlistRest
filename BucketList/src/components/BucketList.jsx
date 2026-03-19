@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getPlaces, togglePlace } from "../List/api";
 import CategoryCard from "./CategoryCard";
-import ProgressBar from "./ProgressBar";
+import { ProgressBar, Addform } from "./ProgressBar";
 
 function BucketList() {
   const [activeCard, setActiveCard] = useState(null);
@@ -36,14 +36,22 @@ function BucketList() {
 
   return (
     <>
-      <div className="card progressCard">
+      <div
+        className={`card progressCard ${activeCard === "progress" ? "activeCard" : ""}`}
+      >
         <div className="mainTitle">
           <h1 className="bucketTitle">Bucket List</h1>
-          <button className="addName">
+          <button
+            className="addName"
+            onClick={() =>
+              setActiveCard(activeCard === "progress" ? null : "progress")
+            }
+          >
             <i class="bi bi-plus"></i>
             <span class="btnText">Add new</span>
           </button>
         </div>
+        
         <div className="progressHeader">
           <h2>
             Visited {visitedCount}/{total}
@@ -51,6 +59,7 @@ function BucketList() {
           <span>{Math.round(progressPercent)}%</span>
         </div>
         <ProgressBar progressPercent={progressPercent} />
+        {activeCard === "progress" && <Addform />}
       </div>
 
       <div className="components">
