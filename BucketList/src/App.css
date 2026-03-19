@@ -1,11 +1,9 @@
-*:focus{
-  outline:none;
-}
 body {
   font-family: "VT323", monospace;
   background: #e9dfd4;
   margin: 0;
   padding: 40px;
+  -webkit-tap-highlight-color: transparent;
 }
 .bucketTitle{
   font-size: 2rem;
