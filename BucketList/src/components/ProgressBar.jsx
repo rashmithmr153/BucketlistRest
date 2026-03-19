@@ -12,7 +12,7 @@ export function Addform(){
     return(
         <div className="addForm">
     <form>
-      <input type="text" placeholder="Name" />
+      <input type="text" placeholder="Name" /><br/>
       <select>
         <option value="cafe">Cafe</option>
         <option value="breakfast">Breakfast</option>
@@ -20,7 +20,7 @@ export function Addform(){
         <option value="seafood">Seafood</option>
         <option value="icecream">Ice Cream</option>
         <option value="other">Other</option>
-      </select>
+      </select><br/>
       <button type="submit">Add</button>
     </form>
   </div>
