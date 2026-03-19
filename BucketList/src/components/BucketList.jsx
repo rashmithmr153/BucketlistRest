@@ -30,24 +30,26 @@ function BucketList() {
     await togglePlace(id);
 
     setPlaces((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, is_visited: !p.is_visited } : p
-      )
+      prev.map((p) => (p.id === id ? { ...p, is_visited: !p.is_visited } : p)),
     );
   }
 
   return (
     <>
       <div className="card progressCard">
-        <h1 className="bucketTitle">Bucket List</h1>
-
+        <div className="mainTitle">
+          <h1 className="bucketTitle">Bucket List</h1>
+          <button className="addName">
+            <i class="bi bi-plus"></i>
+            <span class="btnText">Add new</span>
+          </button>
+        </div>
         <div className="progressHeader">
           <h2>
             Visited {visitedCount}/{total}
           </h2>
           <span>{Math.round(progressPercent)}%</span>
         </div>
-
         <ProgressBar progressPercent={progressPercent} />
       </div>
 

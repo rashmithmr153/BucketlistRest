@@ -5,7 +5,7 @@ body {
   padding: 40px;
   -webkit-tap-highlight-color: transparent;
 }
-.bucketTitle{
+.bucketTitle {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 12px;
@@ -18,8 +18,38 @@ body {
   align-items: center;
   margin-bottom: 5px;
 }
+.mainTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.addName {
+  padding: 6px 20px;
+  border-radius: 4px;
+  background: #f97316;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  i {
+    margin-right: 0.5rem;
+  }
+  .btnText {
+    display: inline;
+  }
+}
+@media (max-width: 576px) {
+  .addName .btnText {
+    display: none;
+  }
+  .addName {
+    width: 30px;
+    padding: 0.5rem;
+  }
+}
+
 .progressContainer {
-    width: 100%;
+  width: 100%;
   height: 12px;
   background: #e3c59c;
   border-radius: 10px;
@@ -30,11 +60,11 @@ body {
   height: 100%;
   background: #f05a22;
 }
-.progressCard{
+.progressCard {
   cursor: default;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   max-width: 900px;
   margin: auto;
 
@@ -47,13 +77,12 @@ body {
   gap: 20px;
   max-width: 900px;
   margin: auto;
-
 }
 .card {
   background: #f6f4f2;
   border-radius: 18px;
   padding: 18px 22px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: all 0.25s ease;
   margin-top: 20px;
@@ -75,7 +104,7 @@ body {
   margin: 0;
 
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 10px;
 
   max-height: 400px;
@@ -93,56 +122,55 @@ label {
   gap: 10px;
   align-items: center;
 }
-.cardHeader{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
   position: sticky;
   top: 0;
   z-index: 3;
 
-
   /* background: #f6f4f2; */
   padding-bottom: 10px;
 }
-.cardHeader h2{
-  display:flex;
-  align-items:center;
-  gap:8px;
+.cardHeader h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.cardHeader i{
-  font-size:1.2rem;
-  color:#f97316;
+.cardHeader i {
+  font-size: 1.2rem;
+  color: #f97316;
 }
 
-.cardCount{
-  font-size:0.9rem;
-  background:#eee;
-  padding:2px 8px;
-  border-radius:10px;
+.cardCount {
+  font-size: 0.9rem;
+  background: #eee;
+  padding: 2px 8px;
+  border-radius: 10px;
 }
 
-.miniProgress{
-  margin-left:auto;
-  width:70px;
-  height:6px;
-  background:#ddd;
-  border-radius:6px;
-  overflow:hidden;
+.miniProgress {
+  margin-left: auto;
+  width: 70px;
+  height: 6px;
+  background: #ddd;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-.miniProgressBar{
-  height:100%;
+.miniProgressBar {
+  height: 100%;
   background: #ec8763;
 }
-input[type="checkbox"]{
+input[type="checkbox"] {
   transform: scale(1.4);
   cursor: pointer;
   accent-color: #ff7a18;
 }
-input[type="checkbox"]:checked + span{
+input[type="checkbox"]:checked + span {
   text-decoration: line-through;
   opacity: 0.6;
 }
