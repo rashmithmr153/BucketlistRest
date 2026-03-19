@@ -1,11 +1,11 @@
 // import { useState } from 'react'
 import './App.css'
-import Components from './components/Component'
+import BucketList from './components/BucketList'
 
 function App() {
   return (
-    <><Components/></>
-  )
+    <BucketList/>
+    )
 }
 
 export default App
