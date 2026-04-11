@@ -39,7 +39,6 @@ func main() {
 	}
 	defer db.Close()
 
-	
 	// Test database connection
 	if err := db.Ping(); err != nil {
 		log.Fatal("Database ping failed:", err)
@@ -85,6 +84,25 @@ func main() {
 		}
 
 		c.JSON(200, places)
+	})
+
+	// Add new place
+	req.POST("/places", func(c *gin.Context) {
+		var place Place
+		if err := c.ShouldBindJSON(&place); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		query := `INSERT INTO places (place_name, category, is_visited) VALUES ($1, $2, $3) RETURNING id`
+		err := db.QueryRow(query, place.Name, place.Category, false).Scan(&place.ID)
+		if err != nil {
+			log.Println("Insert error:", err)
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(201, place)
 	})
 
 	// Update place visited status
